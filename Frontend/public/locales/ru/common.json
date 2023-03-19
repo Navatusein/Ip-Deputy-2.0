@@ -1,0 +1,157 @@
+{
+    "header": {
+        "check": "Выбор",
+        "name": "Имя",
+        "short_name": "Короткое имя",
+        "subgroup": "Подгруппа",
+        "subgroups": "Подгруппы",
+        "index": "Индекс",
+        "person_name": "Имя",
+        "person_surname": "Фамилия",
+        "person_patronymic": "Отчество",
+        "email": "Электронная почта",
+        "fit_email": "Электронная почта Fit",
+        "telegram_phone": "Телефон телеграмма",
+        "contact_phone": "Контактный телефон",
+        "telegram_nickname": "Псевдоним в телеграмме",
+        "birthday": "День рождения",
+        "laboratory_count": "Кол-во Лаб.",
+        "practical_count": "Кол-во Прак.",
+        "time": "Время",
+        "subject_type": "Тип",
+        "works": "Работает",
+        "group": "Группа",
+        "groups": "Группы",
+        "subject": "Предмет",
+        "couple": "Пара",
+        "for_who": "Для кого",
+        "teacher": "Учитель",
+        "link": "Связь",
+        "additional_information": "Дополнительная информация",
+        "start_date": "Дата начала",
+        "end_date": "Дата окончания",
+        "additional_date": "Дополнительные даты",
+        "removed_date": "Удаленные даты"
+    },
+    "alert_message": {
+        "enter_group_name": "Введите название группы!",
+        "enter_subgroup_name": "Введите название подгруппы!",
+        "enter_student_name": "Введите имя ученика!",
+        "enter_student_surname": "Введите фамилию студента!",
+        "enter_student_patronymic": "Введите студенческое отчество!",
+        "enter_student_email": "Введите электронную почту студента!",
+        "enter_student_fit_email": "Введите адрес электронной почты студента!",
+        "enter_student_telegram_phone": "Введите студенческий телеграмм телефон!",
+        "enter_student_contact_phone": "Введите контактный телефон студента!",
+        "enter_student_birthday": "Введите день рождения студента!",
+        "enter_teacher_name": "Введите имя учителя!",
+        "enter_teacher_surname": "Введите фамилию учителя!",
+        "enter_teacher_patronymic": "Введите отчество учителя!",
+        "enter_subject_name": "Введите имя субъекта!",
+        "enter_start_date": "Введите дату начала!",
+        "enter_end_date": "Введите дату окончания!",
+        "enter_additional_date": "Введите дополнительную дату!",
+        "select_student_subgroup": "Выберите студенческую подгруппу!",
+        "select_subject": "Выберите тему!",
+        "select_subject_type": "Выберите тип темы!",
+        "select_couple": "Выберите пару!",
+        "select_for_who": "Выберите для кого!",
+        "select_teacher": "Выберите учителя!",
+        "select_group": "Выберите группу!",
+        "select_subgroup": "Выберите подгруппу!",
+        "date_not_match_week_day": "Выбранная дата не соответствует дню недели!",
+        "additional_date_in_additional_dates": "Эта дополнительная дата уже в дополнительных датах!",
+        "additional_date_in_removed_dates": "Эта дополнительная дата уже в удаленных датах!",
+        "removed_date_in_removed_dates": "Эта удаленная дата уже в удаленных датах!",
+        "removed_date_in_additional_dates": "Эта удаленная дата уже в дополнительных датах!",
+        "work_already_in_list": "Эта работа уже в списке работ!"
+    },
+    "pages": {
+        "groups": {
+            "name": "Группы",
+            "confirm_modal": "Подтвердить удаление {{text}}?"
+        },
+        "subgroup": {
+            "name": "Подгруппа",
+            "confirm_modal": "Подтвердить удаление {{text}}?"
+        },
+        "student": {
+            "name": "Студент",
+            "confirm_modal": "Подтвердить {{surname}} {{name}} удалить?"
+        },
+        "teacher": {
+            "name": "Учитель",
+            "confirm_modal": "Подтвердить {{surname}} {{name}} удалить?"
+        },
+        "subject": {
+            "name": "Предмет",
+            "confirm_modal": "Подтвердить удаление {{text}}?"
+        },
+        "schedule": {
+            "name": "Расписание",
+            "confirm_modal": "Подтвердить удаление расписания?"
+        },
+        "submission_config": {
+            "name": "Конфигурация отправки",
+            "confirm_modal": "Подтвердить удаление конфигурации защиты?"
+        }
+    },
+    "modal_names": {
+        "group": "Группа",
+        "subgroup": "Подгруппа",
+        "student": "Студент",
+        "teacher": "Учитель",
+        "subject": "Предмет",
+        "schedule": "Расписание",
+        "submission_config": "Конфигурация защиты"
+    },
+    "buttons": {
+        "save_changes": "Сохранить изменения",
+        "close": "Закрывать"
+    },
+    "selects": {
+        "subject": {
+            "default": "Выберите тему"
+        },
+        "subject_type": {
+            "default": "Выберите тип темы"
+        },
+        "couple": {
+            "default": "Выберите пару"
+        },
+        "for_who": {
+            "default": "Выберите для кого",
+            "for_cohort": "Для когорт",
+            "for_group": "Для группы",
+            "for_subgroup": "Для подгруппы"
+        },
+        "group": {
+            "default": "Выберите группу"
+        },
+        "subgroup": {
+            "default": "Выберите подгруппу"
+        },
+        "teacher": {
+            "default": "Выберите учителя"
+        },
+        "days_of_week": {
+            "default": "Выберите день недели"
+        }
+    },
+    "checkboxes": {
+        "start_end_date": "Имеет даты начала и окончания",
+        "rolling": "катится"
+    },
+    "prompt": {
+        "enter_new_name": "Введите новое имя"
+    },
+    "days_of_week": {
+        "monday": "Понедельник",
+        "tuesday": "Вторник",
+        "wednesday": "Среда",
+        "thursday": "Четверг",
+        "friday": "Пятница",
+        "saturday": "Суббота",
+        "sunday": "Воскресенье"
+    }
+}

@@ -1,0 +1,160 @@
+{
+    "header": {
+        "check": "Check",
+        "name": "Name",
+        "short_name": "Short Name",
+        "subgroup": "Subgroup",
+        "subgroups": "Subgroups",
+        "index": "Index",
+        "person_name": "Name",
+        "person_surname": "Surname",
+        "person_patronymic": "Patronymic",
+        "email": "Email",
+        "fit_email": "Fit Email",
+        "telegram_phone": "Telegram Phone",
+        "contact_phone": "Contact Phone",
+        "telegram_nickname": "Telegram Nickname",
+        "birthday": "Birthday",
+        "laboratory_count": "Laboratory Count",
+        "practical_count": "Practical Count",
+        "time": "Time",
+        "subject_type": "Subject Type",
+        "works": "Works",
+        "group": "Group",
+        "groups": "Groups",
+        "subject": "Subject",
+        "couple": "Couple",
+        "for_who": "For Who",
+        "teacher": "Teacher",
+        "link": "Link",
+        "additional_information": "Additional information",
+        "start_date": "Start date",
+        "end_date": "End date",
+        "additional_date": "Additional dates",
+        "removed_date": "Removed dates"
+    },
+    "alert_message": {
+        "enter_group_name": "Enter group name!",
+        "enter_subgroup_name": "Enter subgroup name!",
+        "enter_student_name": "Enter student name!",
+        "enter_student_surname": "Enter student surname!",
+        "enter_student_patronymic": "Enter student patronymic!",
+        "enter_student_email": "Enter student email!",
+        "enter_student_fit_email": "Enter student fit email!",
+        "enter_student_telegram_phone": "Enter student telegram phone!",
+        "enter_student_contact_phone": "Enter student contact phone!",
+        "enter_student_birthday": "Enter student birthday!",
+        "enter_teacher_name": "Enter teacher name!",
+        "enter_teacher_surname": "Enter teacher surname!",
+        "enter_teacher_patronymic": "Enter teacher patronymic!",
+        "enter_subject_name": "Enter subject name!",
+        "enter_start_date": "Enter start date!",
+        "enter_end_date": "Enter end date!",
+        "enter_additional_date": "Enter additional date!",
+        "select_student_subgroup": "Select student subgroup!",
+        "select_subject": "Select subject!",
+        "select_subject_type": "Select subject type!",
+        "select_couple": "Select couple!",
+        "select_for_who": "Select for who!",
+        "select_teacher": "Select teacher!",
+        "select_group": "Select group!",
+        "select_subgroup": "Select subgroup!",
+        "date_not_match_week_day": "The selected date does not match the day of the week!",
+        "additional_date_in_additional_dates": "This additional date already in additional dates!",
+        "additional_date_in_removed_dates": "This additional date already in removed dates!",
+        "removed_date_in_removed_dates": "This removed date already in removed dates!",
+        "removed_date_in_additional_dates": "This removed date already in additional dates!",
+        "work_already_in_list": "This work already in works list!"
+    },
+    "pages": {
+        "groups": {
+            "name":  "Groups",
+            "confirm_modal": "Confirm {{text}} delete?"
+        },
+        "subgroup": {
+            "name":  "Subgroup",
+            "confirm_modal": "Confirm {{text}} delete?"
+        },
+        "student": {
+            "name":  "Student",
+            "confirm_modal": "Confirm {{surname}} {{name}} delete?"
+        },
+        "teacher": {
+            "name":  "Teacher",
+            "confirm_modal": "Confirm {{surname}} {{name}} delete?"
+        },
+        "subject": {
+            "name":  "Subject",
+            "confirm_modal": "Confirm {{text}} delete?"
+        },
+        "schedule": {
+            "name":  "Schedule",
+            "confirm_modal": "Confirm schedule delete?"
+        },
+        "submission_config": {
+            "name":  "Submission Config",
+            "confirm_modal": "Confirm submission config delete?"
+        }
+    },
+    "page_confirm_modal": {
+
+    },
+    "modal_names": {
+        "group": "Group",
+        "subgroup": "Subgroup",
+        "student": "Student",
+        "teacher": "Teacher",
+        "subject": "Subject",
+        "schedule": "Schedule",
+        "submission_config": "Submission Config"
+    },
+    "buttons": {
+        "save_changes": "Save Changes",
+        "close": "Close"
+    },
+    "selects":{
+        "subject": {
+            "default": "Select subject"
+        },
+        "subject_type": {
+            "default": "Select subject type"
+        },
+        "couple": {
+            "default": "Select couple"
+        },
+        "for_who": {
+            "default": "Select for who",
+            "for_cohort": "For Сohort",
+            "for_group": "For Group",
+            "for_subgroup": "For Subgroup"
+        },
+        "group": {
+            "default": "Select group"
+        },
+        "subgroup": {
+            "default": "Select subgroup"
+        },
+        "teacher": {
+            "default": "Select teacher"
+        },
+        "days_of_week": {
+            "default": "Select day of week"
+        }
+    },
+    "checkboxes": {
+        "start_end_date": "Has start and end dates",
+        "rolling": "Is rolling"
+    },
+    "prompt": {
+        "enter_new_name": "Enter new name"
+    },
+    "days_of_week": {
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday"
+    }
+}

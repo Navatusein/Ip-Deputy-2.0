@@ -1,0 +1,82 @@
+.cell-fit {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.bot-bg{
+  background-color: var(--tg-theme-secondary-bg-color) !important;
+}
+
+.bot-card-bg {
+  border-color: var(--tg-theme-bg-color) !important;
+  background-color: var(--tg-theme-bg-color) !important;
+}
+
+.bot-text-color {
+  color: var(--tg-theme-text-color) !important;
+}
+
+.bot-hint-color {
+  color: var(--tg-theme-hint-color) !important;
+}
+
+.bot-select {
+  border-color: var(--tg-theme-secondary-bg-color) !important;
+  color: var(--tg-theme-text-color);
+  background-color: var(--tg-theme-secondary-bg-color) !important;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/></svg>")
+}
+
+.bot-select:disabled {
+  border-color: var(--tg-theme-secondary-bg-color) !important;
+  color: var(--tg-theme-hint-color) !important;
+  background-color: var(--tg-theme-secondary-bg-color) !important;
+}
+
+.bot-select:focus {
+  border-color: var(--tg-theme-button-color) !important;
+  box-shadow: 0 0 0 .25rem rgb(from var(--tg-theme-button-color) r g b / 25%)  !important;
+}
+
+.bot-select option:checked {
+  background-color: var(--tg-theme-button-color) !important;
+  color: var(--tg-theme-button-text-color) !important;
+}
+
+.bot-select option:disabled {
+  color: var(--tg-theme-hint-color) !important;
+  background-color: var(--tg-theme-secondary-bg-color) !important;
+}
+
+.bot-input {
+  border-color: var(--tg-theme-secondary-bg-color) !important;
+  color: var(--tg-theme-text-color) !important;
+  background-color: var(--tg-theme-secondary-bg-color) !important;
+}
+
+.bot-input:focus {
+  border-color: var(--tg-theme-button-color) !important;
+  box-shadow: 0 0 0 .25rem rgb(from var(--tg-theme-button-color) r g b / 25%)  !important;
+  color: var(--tg-theme-text-color) !important;
+}
+
+.bot-list{
+  border-color: var(--tg-theme-secondary-bg-color) !important;
+  color: var(--tg-theme-text-color) !important;
+  background-color: var(--tg-theme-secondary-bg-color) !important;
+  border-radius: inherit;
+}
+
+.bot-list:not(:first-child) {
+  /*border-top-color: var(--tg-theme-bg-color) !important;*/
+  /*border-top-width: 2px;*/
+  margin-top: 0.25rem;
+}
+
+.bot-list:not(:last-child) {
+  /*border-bottom-color: var(--tg-theme-bg-color) !important;*/
+  /*border-bottom-width: 2px;*/
+  margin-bottom: 0.25rem;
+}
+
+
