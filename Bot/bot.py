@@ -23,7 +23,6 @@ logger = get_logger(__name__)
 def register_all_middlewares(dp):
     dp.setup_middleware(i18n)
     dp.setup_middleware(LastActivity())
-    pass
 
 
 def register_all_filters(dp):
@@ -51,6 +50,7 @@ async def run_bot():
     register_all_handlers(dp)
 
     bot['config'] = config
+    bot['storage'] = storage
 
     try:
         # loop = asyncio.get_event_loop()
@@ -64,6 +64,7 @@ async def run_bot():
 def main():
     try:
         logger.info('Bot start')
+        logger.info('Version: 1.0.1')
         asyncio.run(run_bot())
     except (KeyboardInterrupt, SystemExit, RuntimeError):
         logger.info('Bot stop')

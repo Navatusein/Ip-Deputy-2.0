@@ -17,6 +17,10 @@ def update_last_activity(telegram_id: int) -> bool:
 
 
 def get_language(telegram_id: int) -> tuple[bool, str]:
+    """
+
+    :rtype: object
+    """
     response = requests.get(f'{base_url}/students/language',
                             params={'telegramId': telegram_id},
                             headers=headers)

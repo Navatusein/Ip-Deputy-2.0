@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Backend.DbModels;
 using Backend.DtoModels.Frontend;
+using Backend.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,48 +9,48 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Controllers
 {
-    [Route("api/frontend/subjects")]
+    [Route("api/frontend/students")]
     [ApiController]
-    public class SubjectsFrontendController : ControllerBase
+    public class StudentsController : ControllerBase
     {
-        private readonly ILogger _logger;
+        private static Serilog.ILogger _logger => Serilog.Log.ForContext<StudentsController>();
         private readonly IpDeputyDbContext _context;
         private readonly IMapper _mapper;
 
-        public SubjectsFrontendController(ILogger<SubjectsFrontendController> logger, IpDeputyDbContext context, IMapper mapper)
+        public StudentsController(IpDeputyDbContext context, IMapper mapper)
         {
-            _logger = logger;
             _context = context;
             _mapper = mapper;
         }
 
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<List<SubjectDto>>> Get()
+        public async Task<ActionResult<List<StudentDbo>>> GetByGroupId(int groupId)
         {
             try
             {
-                List<SubjectDto> dtos = await _context.Subjects
-                    .OrderBy(x => x.Name)
-                    .Select(x => _mapper.Map<SubjectDto>(x))
+                List<StudentDbo> models = await _context.Students
+                    .Where(x => x.GroupId == groupId)
+                    .OrderBy(x => x.Index)
+                    .Select(x => _mapper.Map<StudentDbo>(x))
                     .ToListAsync();
 
-                return Ok(dtos);
+                return Ok(models);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult<SubjectDto>> Add(SubjectDto dto)
+        public async Task<ActionResult<StudentDbo>> Add(StudentDbo dto)
         {
             try
             {
-                Subject model = _mapper.Map<Subject>(dto);
+                Student model = _mapper.Map<Student>(dto);
 
                 await _context.AddAsync(model);
                 await _context.SaveChangesAsync();
@@ -60,30 +61,30 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
         [Authorize]
         [HttpPut]
-        public async Task<ActionResult<SubjectDto>> Update(SubjectDto dto)
+        public async Task<ActionResult<StudentDbo>> Update(StudentDbo dto)
         {
             try
             {
-                if (!_context.Subjects.Any(x => x.Id == dto.Id))
-                    return BadRequest("Invalid subject id");
+                if (!_context.Students.Any(x => x.Id == dto.Id))
+                    return BadRequest("Invalid student id");
 
-                Subject model = _mapper.Map<Subject>(dto);
+                Student model = _mapper.Map<Student>(dto);
 
-                _context.Subjects.Update(model);
+                _context.Students.Update(model);
                 await _context.SaveChangesAsync();
 
                 return Ok(dto);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -94,21 +95,21 @@ namespace Backend.Controllers
         {
             try
             {
-                Subject? model = await _context.Subjects.FirstOrDefaultAsync(x => x.Id == id);
+                Student? model = await _context.Students.FirstOrDefaultAsync(x => x.Id == id);
 
                 if (model == null)
-                    return BadRequest("Invalid subject id");
+                    return BadRequest("Invalid student id");
 
-                _context.Subjects.Remove(model);
+                _context.Students.Remove(model);
                 await _context.SaveChangesAsync();
 
                 return Ok(id);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
-        }
+        }     
     }
 }

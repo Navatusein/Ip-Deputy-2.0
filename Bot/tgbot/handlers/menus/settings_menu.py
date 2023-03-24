@@ -1,4 +1,5 @@
 from aiogram import types, Dispatcher
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
@@ -28,6 +29,8 @@ async def menu_handler_language(message: types.Message):
 # StateChangeLanguage SelectLanguage
 async def state_handler_select_language(message: types.Message, state: FSMContext):
     try:
+        storage: MemoryStorage = message.bot.get('storage')
+
         languages = [
             {'key': 'uk', 'name': '🇺🇦 Українська'},
             {'key': 'ru', 'name': '🇷🇺 Русский'}
@@ -47,6 +50,7 @@ async def state_handler_select_language(message: types.Message, state: FSMContex
         }
 
         i18n.ctx_locale.set(language['key'])
+        storage.data['language_user_info'][message.from_user.id] = language['key']
 
         set_language(language_dto)
         await message.answer(message.text, reply_markup=settings_menu)

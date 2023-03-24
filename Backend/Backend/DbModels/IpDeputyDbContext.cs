@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Backend.Utilities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.DbModels
 {
@@ -57,48 +58,6 @@ namespace Backend.DbModels
                 new SubjectType { Id = 3, Name = "Лекція", ShortName = "Лек." },
                 new SubjectType { Id = 4, Name = "Консультація", ShortName = "Конс." },
                 new SubjectType { Id = 5, Name = "Семінар", ShortName = "Сем." }
-            );
-
-            modelBuilder.Entity<Group>().HasData(
-                new Group { Id = 1, Name = "ІР-21" }
-            );
-
-            modelBuilder.Entity<Subgroup>().HasData(
-                new Subgroup { Id = 1, Index = 1, Name = "ІР-2/1" }
-            );
-
-            modelBuilder.Entity<SubgroupWithGroup>().HasData(
-                new SubgroupWithGroup { Id = 1, GroupId = 1, SubgroupId = 1 }
-            );
-
-            modelBuilder.Entity<Student>().HasData(
-                new Student
-                {
-                    Id = 1,
-                    GroupId = 1,
-                    SubgroupId = 1,
-                    Index = 1,
-                    Name = "Богдан",
-                    Surname = "Куцуліма",
-                    Patronymic = "Юрійович",
-                    TelegramPhone = "380964981430",
-                    ContactPhone = "380964981430",
-                    Email = "boghdan.kutsulima@gmail.com",
-                    FitEmail = "kutsulimab@fit.knu.ua",
-                    TelegramNickname = "@Navatusein",
-                    Birthday = new DateOnly(2004, 04, 08)
-                }
-            );
-
-            modelBuilder.Entity<WebAdminAuth>().HasData(
-                new WebAdminAuth 
-                { 
-                    Id = 1, 
-                    Login = "login",
-                    StudentId = 1,
-                    PasswordHash = "SYEvwD7y6CSjN6NNtIkAplCYIvCqaRQbabxj9iv9X0NpfwrKHQmtInAHuwniroRq4lDpClOqYypv6gZ9qk4YwNcu8EGElzOAtaBjxrBW8eznG1co2yfYiBeiSUHNar/dbfYLrVn6Fp8vFwhycvKmBjXB2+y/BLj9VaR6s6Im+Ts=", 
-                    PasswordSalt = "a6R4ivhnD2w0++Ygi50FWDaCm/7xUORyvkaxxD/A5i6Stps2D/Pn8VWwyZsHPmqFEt6RrFNX0sF71J0tlexpXA=="
-                }
             );
         }
     }

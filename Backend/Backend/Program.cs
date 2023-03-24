@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog.Events;
+using Serilog;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 
@@ -13,16 +15,43 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
+// Configure config file
+builder.Configuration.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "Settings", "appsettings.json"));
+
+const string outputTemplate = @"{Timestamp:MM}.{Timestamp:dd}.{Timestamp:yyyy} {Timestamp:HH:mm:ss} {Level:u4} ({SourceContext}).{MemberName}({LineNumber}) {Message:lj}{NewLine}{Exception}";
+
+// Logger
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.Extensions.Hosting.Internal.Host", LogEventLevel.Information)
+    .MinimumLevel.Override("Backend.Utilities.BotAuthenticationHandler", LogEventLevel.Information)
+    .Enrich.FromLogContext()
+    .WriteTo.Console(
+        //restrictedToMinimumLevel: LogEventLevel.Debug,
+        outputTemplate: outputTemplate)
+    .WriteTo.File(
+        String.Format("Logs/{0:yyyy}-{0:MM}-{0:dd}.log", DateTime.Now),
+        //restrictedToMinimumLevel: LogEventLevel.Debug,
+        outputTemplate: outputTemplate)
+    .CreateBootstrapLogger();
+
+// Add logger
+builder.Host.UseSerilog();
+
 // Configure Swagger
 builder.Services.AddSwaggerGen(options => 
 {
 
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
     {
-        Description = "Standard Authorization header using the Bearer scheme (\"bearer {token}\")",
         In = ParameterLocation.Header,
+        Description = "Please enter a valid token",
         Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
     });
     options.SwaggerDoc("v1", new OpenApiInfo
     {
@@ -31,35 +60,35 @@ builder.Services.AddSwaggerGen(options =>
         Description = "API for telegram bot Ip Deputy Bot",
         Contact = new OpenApiContact
         {
-            Name = "Example Contact",
-            Url = new Uri("https://example.com/contact")
+            Name = "Github",
+            Url = new Uri("https://github.com/Navatusein/Ip-Deputy-2.0")
         },
         License = new OpenApiLicense
         {
-            Name = "Example License",
-            Url = new Uri("https://example.com/license")
+            Name = "License",
+            Url = new Uri("https://github.com/Navatusein/Ip-Deputy-2.0/blob/main/LICENSE")
         }
     });
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
-          new OpenApiSecurityScheme
-          {
-            Reference = new OpenApiReference
+            new OpenApiSecurityScheme
             {
-                Type = ReferenceType.SecurityScheme,
-                Id = "Bearer"
+                Name = JwtBearerDefaults.AuthenticationScheme,
+                In = ParameterLocation.Header,
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id=JwtBearerDefaults.AuthenticationScheme
+                }
             },
-          },
-          new List<string>()
+            new string[]{}
         }
     });
 });
 
-builder.Configuration.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "Settings", "appsettings.json"));
-
 // Configure Database
-builder.Services.AddDbContext<IpDeputyDbContext>(options => options
+builder.Services.AddDbContextPool<IpDeputyDbContext>(options => options
     .UseLazyLoadingProxies()
     .UseNpgsql(builder.Configuration["DatabaseConnectionString"])
 );
@@ -114,7 +143,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-Console.WriteLine(builder.Configuration["DatabaseConnectionString"]);
-
+app.Logger.LogInformation("Version: 1.0.1");
 
 app.Run();

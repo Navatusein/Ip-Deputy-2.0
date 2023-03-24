@@ -110,9 +110,9 @@ async def menu_handler_today_schedule(message: types.Message):
 async def menu_handler_tomorrow_schedule(message: types.Message):
     try:
         date = datetime.today() + timedelta(days=1)
-        message_text = generate_day_schedule_message(message.from_user.id, date)
+        message_string = generate_day_schedule_message(message.from_user.id, date)
 
-        await message.answer(message_text, disable_web_page_preview=True)
+        await message.answer(message_string, disable_web_page_preview=True)
     except Exception as e:
         logger.exception(e)
         await message.answer(_('Непередбачена помилка'))
@@ -123,9 +123,9 @@ async def menu_handler_this_week_schedule(message: types.Message):
     try:
         schedule_compact = get_schedule_format(message.from_user.id)
         date = datetime.today()
-        message_text = generate_week_schedule_message(message.from_user.id, date, schedule_compact)
+        message_string = generate_week_schedule_message(message.from_user.id, date, schedule_compact)
 
-        await message.answer(message_text, disable_web_page_preview=True)
+        await message.answer(message_string, disable_web_page_preview=True)
     except Exception as e:
         logger.exception(e)
         await message.answer(_('Непередбачена помилка'))
@@ -136,9 +136,9 @@ async def menu_handler_next_week_schedule(message: types.Message):
     try:
         schedule_compact = get_schedule_format(message.from_user.id)
         date = datetime.today() + timedelta(days=7 - datetime.today().weekday())
-        message_text = generate_week_schedule_message(message.from_user.id, date, schedule_compact)
+        message_string = generate_week_schedule_message(message.from_user.id, date, schedule_compact)
 
-        await message.answer(message_text, disable_web_page_preview=True)
+        await message.answer(message_string, disable_web_page_preview=True)
     except Exception as e:
         logger.exception(e)
         await message.answer(_('Непередбачена помилка'))

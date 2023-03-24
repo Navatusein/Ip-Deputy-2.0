@@ -20,15 +20,14 @@ namespace Backend.Controllers.Bot
 {
     [Route("api/bot/authentication")]
     [ApiController]
-    public class AuthenticationBotController : ControllerBase
+    public class AuthenticationController : ControllerBase
     {
-        private readonly ILogger _logger;
+        private static Serilog.ILogger _logger => Serilog.Log.ForContext<AuthenticationController>();
         private readonly IConfiguration _config;
         private readonly IpDeputyDbContext _context;
 
-        public AuthenticationBotController(ILogger<AuthenticationBotController> logger, IConfiguration config, IpDeputyDbContext context)
+        public AuthenticationController(IConfiguration config, IpDeputyDbContext context)
         {
-            _logger = logger;
             _config = config;
             _context = context;
         }
@@ -40,12 +39,20 @@ namespace Backend.Controllers.Bot
         {
             try
             {
-                Student? student = await _context.Students.FirstOrDefaultAsync(x => x.TelegramPhone == loginData.TelegramPhone);
+                _logger.Here().Verbose("Start (loginData:{@param1})", loginData);
+                Student? student = await _context.Students
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.TelegramPhone == loginData.TelegramPhone);
 
                 if (student == null)
+                {
+                    _logger.Here().Verbose("Result (No such student)");
                     return Unauthorized("No such student");
+                }
+                    
 
-                StudentWithTelegram? telegram = await _context.StudentWithTelegram.FirstOrDefaultAsync(x => x.TelegramId == loginData.TelegramId);
+                StudentWithTelegram? telegram = await _context.StudentWithTelegram
+                    .FirstOrDefaultAsync(x => x.TelegramId == loginData.TelegramId);
 
                 if (telegram == null)
                 {
@@ -61,11 +68,12 @@ namespace Backend.Controllers.Bot
                     await _context.SaveChangesAsync();
                 }
 
+                _logger.Here().Verbose("Result (Successfully logined)");
                 return Ok("Successfully logined");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -77,17 +85,24 @@ namespace Backend.Controllers.Bot
         {
             try
             {
-                StudentWithTelegram? telegram = await _context.StudentWithTelegram.FirstOrDefaultAsync(x => x.TelegramId == telegramId);
+                _logger.Here().Verbose("Start (telegramId:{@param1})", telegramId);
+                StudentWithTelegram? telegram = await _context.StudentWithTelegram
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.TelegramId == telegramId);
 
                 if (telegram == null)
+                {
+                    _logger.Here().Verbose("Result (Unauthorized)");
                     return Unauthorized();
+                }
 
 
+                _logger.Here().Verbose("Result (Ok)");
                 return Ok();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -99,19 +114,29 @@ namespace Backend.Controllers.Bot
         {
             try
             {
+                _logger.Here().Verbose("Start (telegramId:{@param1})", telegramId);
                 StudentWithTelegram? telegram = await _context.StudentWithTelegram.FirstOrDefaultAsync(x => x.TelegramId == telegramId);
 
                 if (telegram == null)
+                {
+                    _logger.Here().Verbose("Result (Unauthorized)");
                     return Unauthorized();
+                }
+                    
 
                 if (telegram.Student.WebAdminAuth == null)
+                {
+                    _logger.Here().Verbose("Result (False)");
                     return Ok(false);
+                }
+                    
 
+                _logger.Here().Verbose("Result (True)");
                 return Ok(true);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -123,10 +148,16 @@ namespace Backend.Controllers.Bot
         {
             try
             {
-                Student? student = await _context.Students.FirstOrDefaultAsync(x => x.StudentWithTelegram!.TelegramId == telegramId);
+                _logger.Here().Verbose("Start (telegramId:{@param1})", telegramId);
+                Student? student = await _context.Students
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.StudentWithTelegram!.TelegramId == telegramId);
 
                 if (student == null)
+                {
+                    _logger.Here().Verbose("Result (Unauthorized)");
                     return Unauthorized();
+                }
 
                 string token = GetAuthorizeJwt(student.Id);
 
@@ -140,11 +171,12 @@ namespace Backend.Controllers.Bot
 
                 string base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
 
+                _logger.Here().Verbose("Result ({@param1})", base64);
                 return Ok(base64);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
