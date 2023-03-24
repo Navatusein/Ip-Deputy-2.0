@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Backend.DbModels;
 using Backend.DtoModels.Frontend;
+using Backend.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,15 +11,14 @@ namespace Backend.Controllers.Frontend
 {
     [Route("api/frontend/subject-types")]
     [ApiController]
-    public class SubjectTypesFrontendController : ControllerBase
+    public class SubjectTypesController : ControllerBase
     {
-        private readonly ILogger _logger;
+        private static Serilog.ILogger _logger => Serilog.Log.ForContext<SubjectTypesController>();
         private readonly IpDeputyDbContext _context;
         private readonly IMapper _mapper;
 
-        public SubjectTypesFrontendController(ILogger<SubjectTypesFrontendController> logger, IpDeputyDbContext context, IMapper mapper)
+        public SubjectTypesController(IpDeputyDbContext context, IMapper mapper)
         {
-            _logger = logger;
             _context = context;
             _mapper = mapper;
         }
@@ -38,7 +38,7 @@ namespace Backend.Controllers.Frontend
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }

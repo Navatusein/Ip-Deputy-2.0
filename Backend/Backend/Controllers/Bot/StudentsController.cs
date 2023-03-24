@@ -5,20 +5,20 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Buffers.Text;
 
 namespace Backend.Controllers.Bot
 {
     [Route("api/bot/students")]
     [ApiController]
-    public class StudentsBotController : ControllerBase
+    public class StudentsController : ControllerBase
     {
-        private readonly ILogger _logger;
+        private static Serilog.ILogger _logger => Serilog.Log.ForContext<StudentsController>();
         private readonly IConfiguration _config;
         private readonly IpDeputyDbContext _context;
 
-        public StudentsBotController(ILogger<StudentsBotController> logger, IConfiguration config, IpDeputyDbContext context)
+        public StudentsController(IConfiguration config, IpDeputyDbContext context)
         {
-            _logger = logger;
             _config = config;
             _context = context;
         }
@@ -30,22 +30,29 @@ namespace Backend.Controllers.Bot
         {
             try
             {
-                StudentWithTelegram? telegram = await _context.StudentWithTelegram.FirstOrDefaultAsync(x => x.TelegramId == telegramId);
+                _logger.Here().Verbose("Start (telegramId:{@param1})", telegramId);
+                StudentWithTelegram? telegram = await _context.StudentWithTelegram
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.TelegramId == telegramId);
 
                 if (telegram == null)
+                {
+                    _logger.Here().Verbose("Result (Unauthorized)");
                     return Unauthorized();
+                }
 
-                Student student = telegram.Student;
-                student.LastActivity = DateTime.Now;
+                Student student = new Student { Id = telegram.StudentId, LastActivity = DateTime.UtcNow };
 
-                _context.Update(student);
+                _context.Students.Attach(student);
+                _context.Entry(student).Property(x => x.LastActivity).IsModified = true;
                 await _context.SaveChangesAsync();
 
+                _logger.Here().Verbose("Result (Ok)");
                 return Ok();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -57,16 +64,23 @@ namespace Backend.Controllers.Bot
         {
             try
             {
-                StudentWithTelegram? telegram = await _context.StudentWithTelegram.FirstOrDefaultAsync(x => x.TelegramId == telegramId);
+                _logger.Here().Verbose("Start (telegramId:{@param1})", telegramId);
+                StudentWithTelegram? telegram = await _context.StudentWithTelegram
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.TelegramId == telegramId);
 
                 if (telegram == null)
+                {
+                    _logger.Here().Verbose("Result (Unauthorized)");
                     return Unauthorized();
+                }
 
+                _logger.Here().Verbose("Result ({@param1})", telegram.Language);
                 return Ok(telegram.Language);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -78,21 +92,26 @@ namespace Backend.Controllers.Bot
         {
             try
             {
+                _logger.Here().Verbose("Start (dto:{@param1})", dto);
                 StudentWithTelegram? telegram = await _context.StudentWithTelegram.FirstOrDefaultAsync(x => x.TelegramId == dto.TelegramId);
 
                 if (telegram == null)
+                {
+                    _logger.Here().Verbose("Result (Unauthorized)");
                     return Unauthorized();
+                }
 
                 telegram.Language = dto.Language;
 
                 _context.Update(telegram);
                 await _context.SaveChangesAsync();
 
+                _logger.Here().Verbose("Result (Ok)");
                 return Ok();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -104,16 +123,23 @@ namespace Backend.Controllers.Bot
         {
             try
             {
-                StudentWithTelegram? telegram = await _context.StudentWithTelegram.FirstOrDefaultAsync(x => x.TelegramId == telegramId);
+                _logger.Here().Verbose("Start (telegramId:{@param1})", telegramId);
+                StudentWithTelegram? telegram = await _context.StudentWithTelegram
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.TelegramId == telegramId);
 
                 if (telegram == null)
+                {
+                    _logger.Here().Verbose("Result (Unauthorized)");
                     return Unauthorized();
+                }
 
+                _logger.Here().Verbose("Result ({@param1})", telegram.ScheduleCompact);
                 return Ok(telegram.ScheduleCompact);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -125,21 +151,26 @@ namespace Backend.Controllers.Bot
         {
             try
             {
+                _logger.Here().Verbose("Start (dto:{@param1})", dto);
                 StudentWithTelegram? telegram = await _context.StudentWithTelegram.FirstOrDefaultAsync(x => x.TelegramId == dto.TelegramId);
 
                 if (telegram == null)
+                {
+                    _logger.Here().Verbose("Result (Unauthorized)");
                     return Unauthorized();
+                }
 
                 telegram.ScheduleCompact = dto.ScheduleCompact;
 
                 _context.Update(telegram);
                 await _context.SaveChangesAsync();
 
+                _logger.Here().Verbose("Result (Ok)");
                 return Ok();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }

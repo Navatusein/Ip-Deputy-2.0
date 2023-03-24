@@ -4,3 +4,6 @@ push:
 	docker push navatusein/ip-deputy-bot -a
 run:
 	docker run --rm --env-file .env --name ip-deputy-bot navatusein/ip-deputy-bot
+publish:
+	make build v=$(v)
+	make push

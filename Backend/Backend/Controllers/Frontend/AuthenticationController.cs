@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
+using Serilog.Context;
+using Serilog;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -20,15 +22,14 @@ namespace Backend.Controllers.Frontend
 {
     [Route("api/frontend/authentication")]
     [ApiController]
-    public class AuthenticationFrontendController : ControllerBase
+    public class AuthenticationController : ControllerBase
     {
-        private readonly ILogger _logger;
+        private static Serilog.ILogger _logger => Serilog.Log.ForContext<AuthenticationController>();
         private readonly IConfiguration _config;
         private readonly IpDeputyDbContext _context;
 
-        public AuthenticationFrontendController(ILogger<AuthenticationFrontendController> logger, IConfiguration config, IpDeputyDbContext context)
+        public AuthenticationController(IConfiguration config, IpDeputyDbContext context)
         {
-            _logger = logger;
             _config = config;
             _context = context;
         }
@@ -40,7 +41,7 @@ namespace Backend.Controllers.Frontend
         {
             try
             {
-                WebAdminAuth? webAdminAuth = await _context.WebAdminAuths.FirstOrDefaultAsync(x => x.Login == loginData.Login.ToLower());
+                WebAdminAuth? webAdminAuth = await _context.WebAdminAuths.Where(x => x.Login == loginData.Login.ToLower()).FirstOrDefaultAsync();
 
                 if (webAdminAuth == null)
                     return BadRequest("Invalid user login or password");
@@ -56,7 +57,7 @@ namespace Backend.Controllers.Frontend
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -87,7 +88,7 @@ namespace Backend.Controllers.Frontend
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -111,7 +112,7 @@ namespace Backend.Controllers.Frontend
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -206,9 +207,9 @@ namespace Backend.Controllers.Frontend
                         return studentId == id;
                     }
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    _logger.LogError(e.Message);
+                    _logger.Here().Error(ex, "");
                 }
             }
 

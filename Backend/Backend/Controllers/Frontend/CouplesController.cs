@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Backend.DbModels;
 using Backend.DtoModels.Frontend;
+using Backend.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,15 +11,14 @@ namespace Backend.Controllers
 {
     [Route("api/frontend/couples")]
     [ApiController]
-    public class CouplesFrontendController : ControllerBase
+    public class CouplesController : ControllerBase
     {
-        private readonly ILogger _logger;
+        private static Serilog.ILogger _logger => Serilog.Log.ForContext<CouplesController>();
         private readonly IpDeputyDbContext _context;
         private readonly IMapper _mapper;
 
-        public CouplesFrontendController(ILogger<CouplesFrontendController> logger, IpDeputyDbContext context, IMapper mapper)
+        public CouplesController(IpDeputyDbContext context, IMapper mapper)
         {
-            _logger = logger;
             _context = context;
             _mapper = mapper;
         }
@@ -38,7 +38,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }

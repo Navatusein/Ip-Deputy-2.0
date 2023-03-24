@@ -13,15 +13,14 @@ namespace Backend.Controllers.Bot
 {
     [Route("api/bot/submissions")]
     [ApiController]
-    public class SubmissionsBotController : ControllerBase
+    public class SubmissionsController : ControllerBase
     {
-        private readonly ILogger _logger;
+        private static Serilog.ILogger _logger => Serilog.Log.ForContext<SubmissionsController>();
         private readonly IpDeputyDbContext _context;
         private readonly IMapper _mapper;
 
-        public SubmissionsBotController(ILogger<SubmissionsBotController> logger, IpDeputyDbContext context, IMapper mapper)
+        public SubmissionsController(IpDeputyDbContext context, IMapper mapper)
         {
-            _logger = logger;
             _context = context;
             _mapper = mapper;
         }
@@ -33,12 +32,18 @@ namespace Backend.Controllers.Bot
         {
             try
             {
-                StudentWithTelegram? telegram = await _context.StudentWithTelegram.FirstOrDefaultAsync(x => x.TelegramId == telegramId);
+                _logger.Here().Verbose("Start (telegramId:{@param1})", telegramId);
 
-                if (telegram == null)
+                StudentWithTelegram? telegram = await _context.StudentWithTelegram
+                    .FirstOrDefaultAsync(x => x.TelegramId == telegramId);
+
+                if (telegram == null){
+                    _logger.Here().Verbose("Result (Unauthorized)");
                     return Unauthorized();
+                }
 
                 List<SubmisionInfoDto> dtos = await _context.SubmissionConfigs
+                    .AsNoTracking()
                     .Where(x => x.SubmissionWithGroups.Any(y => y.GroupId == telegram.Student.GroupId) && (x.SubgroupId == null || x.SubgroupId == telegram.Student.SubgroupId))
                     .Select(x => new SubmisionInfoDto()
                     {
@@ -48,11 +53,12 @@ namespace Backend.Controllers.Bot
                     })
                     .ToListAsync();
 
+                _logger.Here().Verbose("Result ({@param1})", dtos);
                 return Ok(dtos);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -64,14 +70,20 @@ namespace Backend.Controllers.Bot
         {
             try
             {
-                SubmissionConfig? submissionConfig = await _context.SubmissionConfigs.FirstOrDefaultAsync(x => x.Id == submissionConfigId);
+                _logger.Here().Verbose("Start (submissionConfigId:{@param1})", submissionConfigId);
+
+                SubmissionConfig? submissionConfig = await _context.SubmissionConfigs
+                    .FirstOrDefaultAsync(x => x.Id == submissionConfigId);
 
                 if (submissionConfig == null)
+                {
+                    _logger.Here().Verbose("Result (Invalid submission config id)");
                     return BadRequest("Invalid submission config id");
+                }
 
                 Dictionary<string, List<string>> submissionStudents = new Dictionary<string, List<string>>();
 
-                foreach (var submission in submissionConfig.Submissions.OrderBy(x => x.SubmissionWork.Name))
+                foreach (var submission in submissionConfig.Submissions.OrderBy(x => x.Id).OrderBy(x => x.SubmissionWork.Name))
                 {
                     string studentName = $"{submission.Student.Surname} {submission.Student.Name}";
 
@@ -81,12 +93,13 @@ namespace Backend.Controllers.Bot
                     submissionStudents[studentName].Add(submission.SubmissionWork.Name);
                 }
 
+                _logger.Here().Verbose("Result ({@param1})", submissionStudents);
                 return Ok(submissionStudents);
 
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -98,18 +111,24 @@ namespace Backend.Controllers.Bot
         {
             try
             {
+                _logger.Here().Verbose("Start (submissionConfigId:{@param1})", submissionConfigId);
+
                 if (_context.SubmissionConfigs.All(x => x.Id != submissionConfigId))
+                {
+                    _logger.Here().Verbose("Result (Invalid submission config id)");
                     return BadRequest("Invalid submission config id");
+                };
 
                 _context.Submissions.RemoveRange(await _context.Submissions.Where(x => x.SubmissionConfigId == submissionConfigId).ToListAsync());
                 await _context.SaveChangesAsync();
 
+                _logger.Here().Verbose("Result (Ok)");
                 return Ok();
 
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }

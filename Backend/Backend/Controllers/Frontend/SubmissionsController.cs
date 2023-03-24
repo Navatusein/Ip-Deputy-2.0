@@ -2,6 +2,7 @@
 using Backend.DbModels;
 using Backend.DtoModels.Bot;
 using Backend.DtoModels.Frontend;
+using Backend.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,15 +12,14 @@ namespace Backend.Controllers.Frontend
 {
     [Route("api/frontend/submissions")]
     [ApiController]
-    public class SubmissionsFrontendController : ControllerBase
+    public class SubmissionsController : ControllerBase
     {
-        private readonly ILogger _logger;
+        private static Serilog.ILogger _logger => Serilog.Log.ForContext<SubmissionsController>();
         private readonly IpDeputyDbContext _context;
         private readonly IMapper _mapper;
 
-        public SubmissionsFrontendController(ILogger<SubmissionsFrontendController> logger, IpDeputyDbContext context, IMapper mapper)
+        public SubmissionsController(IpDeputyDbContext context, IMapper mapper)
         {
-            _logger = logger;
             _context = context;
             _mapper = mapper;
         }
@@ -39,7 +39,7 @@ namespace Backend.Controllers.Frontend
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -66,7 +66,7 @@ namespace Backend.Controllers.Frontend
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -89,7 +89,7 @@ namespace Backend.Controllers.Frontend
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -112,7 +112,7 @@ namespace Backend.Controllers.Frontend
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -135,7 +135,7 @@ namespace Backend.Controllers.Frontend
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }

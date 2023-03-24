@@ -2,24 +2,25 @@
 using Backend.DbModels;
 using Backend.DtoModels.Bot;
 using Backend.DtoModels.Frontend;
+using Backend.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Buffers.Text;
 using System.Collections.Generic;
 
 namespace Backend.Controllers.Bot
 {
     [Route("api/bot/schedules")]
     [ApiController]
-    public class SchedulesBotController : ControllerBase
+    public class SchedulesController : ControllerBase
     {
-        private readonly ILogger _logger;
+        private static Serilog.ILogger _logger => Serilog.Log.ForContext<SchedulesController>();
         private readonly IpDeputyDbContext _context;
         private readonly IMapper _mapper;
 
-        public SchedulesBotController(ILogger<SchedulesBotController> logger, IpDeputyDbContext context, IMapper mapper)
+        public SchedulesController(IpDeputyDbContext context, IMapper mapper)
         {
-            _logger = logger;
             _context = context;
             _mapper = mapper;
         }
@@ -30,10 +31,16 @@ namespace Backend.Controllers.Bot
         {
             try
             {
-                Student? student = await _context.Students.FirstOrDefaultAsync(x => x.StudentWithTelegram!.TelegramId == telegramId);
+                _logger.Here().Verbose("Start (telegramId:{@param1}, dateString:{@param2})", telegramId, dateString);
+                Student? student = await _context.Students
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.StudentWithTelegram!.TelegramId == telegramId);
 
                 if (student == null)
+                {
+                    _logger.Here().Verbose("Result (No such student)");
                     return Unauthorized("No such student");
+                }
 
                 DateOnly date = DateOnly.Parse(dateString);
 
@@ -45,11 +52,12 @@ namespace Backend.Controllers.Bot
 
                 schedule.Subjects = await GetSubjectsForScheduleInfo(student, date);
 
+                _logger.Here().Verbose("Result ({@param1})", schedule);
                 return Ok(schedule);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -60,10 +68,16 @@ namespace Backend.Controllers.Bot
         {
             try
             {
-                Student? student = await _context.Students.FirstOrDefaultAsync(x => x.StudentWithTelegram!.TelegramId == telegramId);
+                _logger.Here().Verbose("Start (telegramId:{@param1}, dateString:{@param2})", telegramId, dateString);
+                Student? student = await _context.Students
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.StudentWithTelegram!.TelegramId == telegramId);
 
                 if (student == null)
+                {
+                    _logger.Here().Verbose("Result (No such student)");
                     return Unauthorized("No such student");
+                }
 
                 DateOnly date = DateOnly.Parse(dateString);
                 DateOnly startWeek = date.AddDays(-(date.DayOfWeek == 0 ? 6 : (int)date.DayOfWeek - 1));
@@ -81,11 +95,12 @@ namespace Backend.Controllers.Bot
                     schedule.Subjects.Add(day.ToString(), await GetSubjectsForScheduleInfo(student, day));
                 }
 
+                _logger.Here().Verbose("Result ({@param1})", schedule);
                 return Ok(schedule);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -95,8 +110,9 @@ namespace Backend.Controllers.Bot
             List<SubjectForScheduleInfoDto> subjectForScheduleInfoDtos = new List<SubjectForScheduleInfoDto>();
 
             List<Schedule> schedules = await _context.Schedules
-            .Where(x => x.DayOfWeek.Index == (int)date.DayOfWeek && x.ScheduleWithGroups.Any(y => y.GroupId == student.GroupId))
-            .ToListAsync();
+                .Where(x => x.DayOfWeek.Index == (int)date.DayOfWeek && x.ScheduleWithGroups.Any(y => y.GroupId == student.GroupId))
+                .OrderBy(x => x.CoupleTime.Index)
+                .ToListAsync();
 
             foreach (var schedule in schedules)
             {

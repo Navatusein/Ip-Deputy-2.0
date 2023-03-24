@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Backend.DbModels;
 using Backend.DtoModels.Frontend;
+using Backend.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,49 +9,47 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Controllers
 {
-    [Route("api/frontend/students")]
+    [Route("api/frontend/subgroups")]
     [ApiController]
-    public class StudentsFrontendController : ControllerBase
+    public class SubgroupsFrontendController : ControllerBase
     {
-        private readonly ILogger _logger;
+        private static Serilog.ILogger _logger => Serilog.Log.ForContext<SubgroupsFrontendController>();
         private readonly IpDeputyDbContext _context;
         private readonly IMapper _mapper;
 
-        public StudentsFrontendController(ILogger<StudentsFrontendController> logger, IpDeputyDbContext context, IMapper mapper)
+        public SubgroupsFrontendController(IpDeputyDbContext context, IMapper mapper)
         {
-            _logger = logger;
             _context = context;
             _mapper = mapper;
         }
 
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<List<StudentDbo>>> GetByGroupId(int groupId)
+        public async Task<ActionResult<List<SubgroupDto>>> Get()
         {
             try
             {
-                List<StudentDbo> models = await _context.Students
-                    .Where(x => x.GroupId == groupId)
-                    .OrderBy(x => x.Index)
-                    .Select(x => _mapper.Map<StudentDbo>(x))
+                List<SubgroupDto> models = await _context.Subgroups
+                    .OrderBy(x => x.Name)
+                    .Select(x => _mapper.Map<SubgroupDto>(x))
                     .ToListAsync();
 
                 return Ok(models);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult<StudentDbo>> Add(StudentDbo dto)
+        public async Task<ActionResult<SubgroupDto>> Add(SubgroupDto dto)
         {
             try
             {
-                Student model = _mapper.Map<Student>(dto);
+                Subgroup model = _mapper.Map<Subgroup>(dto);
 
                 await _context.AddAsync(model);
                 await _context.SaveChangesAsync();
@@ -61,30 +60,30 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
         [Authorize]
         [HttpPut]
-        public async Task<ActionResult<StudentDbo>> Update(StudentDbo dto)
+        public async Task<ActionResult<SubgroupDto>> Update(SubgroupDto dto)
         {
             try
             {
-                if (!_context.Students.Any(x => x.Id == dto.Id))
-                    return BadRequest("Invalid student id");
+                if (!_context.Subgroups.Any(x => x.Id == dto.Id))
+                    return BadRequest("Invalid subgroup id");
 
-                Student model = _mapper.Map<Student>(dto);
+                Subgroup model = _mapper.Map<Subgroup>(dto);
 
-                _context.Students.Update(model);
+                _context.Subgroups.Update(model);
                 await _context.SaveChangesAsync();
 
                 return Ok(dto);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -95,21 +94,21 @@ namespace Backend.Controllers
         {
             try
             {
-                Student? model = await _context.Students.FirstOrDefaultAsync(x => x.Id == id);
+                Subgroup? model = await _context.Subgroups.FirstOrDefaultAsync(x => x.Id == id);
 
                 if (model == null)
-                    return BadRequest("Invalid student id");
+                    return BadRequest("Invalid subgroup id");
 
-                _context.Students.Remove(model);
+                _context.Subgroups.Remove(model);
                 await _context.SaveChangesAsync();
 
                 return Ok(id);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Here().Error(ex, "");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
-        }     
+        }
     }
 }
