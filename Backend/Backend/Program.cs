@@ -18,23 +18,9 @@ builder.Services.AddEndpointsApiExplorer();
 // Configure config file
 builder.Configuration.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "Settings", "appsettings.json"));
 
-const string outputTemplate = @"{Timestamp:MM}.{Timestamp:dd}.{Timestamp:yyyy} {Timestamp:HH:mm:ss} {Level:u4} ({SourceContext}).{MemberName}({LineNumber}) {Message:lj}{NewLine}{Exception}";
-
 // Logger
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
-    .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
-    .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
-    .MinimumLevel.Override("Microsoft.Extensions.Hosting.Internal.Host", LogEventLevel.Information)
-    .MinimumLevel.Override("Backend.Utilities.BotAuthenticationHandler", LogEventLevel.Information)
-    .Enrich.FromLogContext()
-    .WriteTo.Console(
-        //restrictedToMinimumLevel: LogEventLevel.Debug,
-        outputTemplate: outputTemplate)
-    .WriteTo.File(
-        String.Format("Logs/{0:yyyy}-{0:MM}-{0:dd}.log", DateTime.Now),
-        //restrictedToMinimumLevel: LogEventLevel.Debug,
-        outputTemplate: outputTemplate)
+    .ReadFrom.Configuration(builder.Configuration)
     .CreateBootstrapLogger();
 
 // Add logger
@@ -88,16 +74,22 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 // Configure Database
-builder.Services.AddDbContextPool<IpDeputyDbContext>(options => options
-    .UseLazyLoadingProxies()
-    .UseNpgsql(builder.Configuration["DatabaseConnectionString"])
-);
-
-// Configure Cors
-builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
+builder.Services.AddDbContextPool<IpDeputyDbContext>(options =>
 {
-    builder.WithOrigins("https://ipdeputy.navatuseinserver.duckdns.org", "http://localhost:5173", "http://192.168.1.100:5173").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
-}));
+    options.UseLazyLoadingProxies();
+
+    switch (builder.Configuration["Database:Provider"])
+    {
+        case "Sqlite":
+            options.UseSqlite(builder.Configuration["Database:ConnectionString"]);
+            break;
+        case "Npgsql":
+            options.UseNpgsql(builder.Configuration["Database:ConnectionString"]);
+            break;
+        default:
+            break;
+    }
+});
 
 // Configure Frontend Authentication Service
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -135,7 +127,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("corsapp");
+app.UseCors(options => {
+    string[] origins = builder.Configuration.GetSection("Origins").Get<string[]>();
+
+    options.WithOrigins(origins);
+    options.AllowAnyMethod();
+    options.AllowAnyHeader();
+    options.AllowCredentials();
+});
+
 
 app.UseAuthentication();
 
@@ -143,6 +143,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Logger.LogInformation("Version: 1.0.1");
+app.Logger.LogInformation("Version: 1.0.2");
 
 app.Run();

@@ -1,4 +1,5 @@
 build:
+	docker rmi navatusein/ip-deputy-backend
 	docker build -t navatusein/ip-deputy-backend:$(v) -t navatusein/ip-deputy-backend:latest .
 push:
 	docker push navatusein/ip-deputy-backend -a
