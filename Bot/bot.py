@@ -64,7 +64,7 @@ async def run_bot():
 def main():
     try:
         logger.info('Bot start')
-        logger.info('Version: 1.0.1')
+        logger.info('Version: 1.0.2')
         asyncio.run(run_bot())
     except (KeyboardInterrupt, SystemExit, RuntimeError):
         logger.info('Bot stop')

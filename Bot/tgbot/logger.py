@@ -1,7 +1,5 @@
 import logging
-from logging.handlers import TimedRotatingFileHandler
-import sys
-from datetime import datetime
+from logging import FileHandler
 
 from os import path, makedirs
 
@@ -14,7 +12,7 @@ def get_file_handler():
     if not path.exists('logs'):
         makedirs('logs')
 
-    file_handler = TimedRotatingFileHandler('logs/{:%Y-%m-%d}.log'.format(datetime.now()), when="midnight")
+    file_handler = FileHandler('logs/Log.log')
     file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(_log_formatter)
     return file_handler

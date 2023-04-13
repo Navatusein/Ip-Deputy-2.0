@@ -83,7 +83,7 @@ namespace Backend.Controllers.Bot
 
                 Dictionary<string, List<string>> submissionStudents = new Dictionary<string, List<string>>();
 
-                foreach (var submission in submissionConfig.Submissions.OrderBy(x => x.Id).OrderBy(x => x.SubmissionWork.Name))
+                foreach (var submission in submissionConfig.Submissions.OrderBy(x => x.Id).ThenBy(x => x.SubmissionWork.Name))
                 {
                     string studentName = $"{submission.Student.Surname} {submission.Student.Name}";
 

@@ -92,7 +92,7 @@ namespace Backend.Controllers.Bot
                 {
                     DateOnly day = startWeek.AddDays(i);
 
-                    schedule.Subjects.Add(day.ToString(), await GetSubjectsForScheduleInfo(student, day));
+                    schedule.Subjects.Add(day.ToString("dd.MM.yyyy"), await GetSubjectsForScheduleInfo(student, day));
                 }
 
                 _logger.Here().Verbose("Result ({@param1})", schedule);

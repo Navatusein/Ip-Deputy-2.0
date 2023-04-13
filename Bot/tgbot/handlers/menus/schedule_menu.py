@@ -68,6 +68,8 @@ def generate_day_schedule_message(telegram_id: int, date: datetime):
 def generate_week_schedule_message(telegram_id: int, date: datetime, compact: bool = False):
     schedule = get_schedule_for_week(telegram_id, date.strftime('%Y-%m-%d'))
 
+    logger.info(f'schedule: {schedule}')
+
     days_of_week = [str(_('ПОНЕДІЛОК')), str(_('ВІВТОРОК')), str(_('СЕРЕДА')), str(_('ЧЕТВЕР')), str(_('П\'ЯТНИЦЯ')),
                     str(_('СУБОТА')), str(_('НЕДІЛЯ'))]
 
@@ -86,7 +88,7 @@ def generate_week_schedule_message(telegram_id: int, date: datetime, compact: bo
         message_string += '\n'
 
     for index, day_couples in enumerate(schedule['subjects']):
-        message_string += f'<b>{days_of_week[index]} ({day_couples[:5]}):</b>\n'
+        message_string += f'<b>{days_of_week[index]} ({day_couples[:5].replace("/", ".")}):</b>\n'
         message_string += generate_day_couples(schedule, schedule['subjects'][day_couples], not compact)
         message_string += '\n'
 
