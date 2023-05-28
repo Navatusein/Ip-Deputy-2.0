@@ -85,6 +85,7 @@ namespace Backend.Controllers.Bot
                 ScheduleWeekInfoDto schedule = new ScheduleWeekInfoDto();
 
                 schedule.CouplesTimes = await _context.CoupleTimes
+                    .OrderBy(x => x.Index)
                     .Select(x => $"{x.TimeStart} - {x.TimeEnd}")
                     .ToListAsync();
 
@@ -126,7 +127,7 @@ namespace Backend.Controllers.Bot
                         IsMySubgroup = schedule.SubgroupId == null || student.SubgroupId == schedule.SubgroupId,
                         Link = schedule.Link,
                         AdditionalInformation = schedule.AdditionalInformation,
-                    }); ;
+                    });
 
                     continue;
                 }
